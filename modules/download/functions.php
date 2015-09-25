@@ -53,7 +53,7 @@ function nv_list_cats( $is_link = false, $is_parentlink = true )
 {
 	global $module_data, $module_name, $module_info;
 
-	$sql = 'SELECT id,title,alias,description,groups_view,groups_download,viewcat,numlink,parentid FROM ' . NV_PREFIXLANG . '_' . $module_data . '_categories WHERE status=1 ORDER BY parentid,weight ASC';
+	$sql = 'SELECT id,title,alias,description,groups_view,groups_download, parentid FROM ' . NV_PREFIXLANG . '_' . $module_data . '_categories WHERE status=1 ORDER BY parentid,weight ASC';
 
 	$list = nv_db_cache( $sql, 'id' );
 
@@ -148,7 +148,6 @@ function nv_mod_down_config()
 
 if( $op == 'main' )
 {
-	$page = 1; // Trang mặc định
 	$catalias = '';
 	$filealias = '';
 	$catid = 0;
@@ -237,10 +236,6 @@ if( $op == 'main' )
 				$parentid = $c['parentid'];
 			}
 			sort( $array_mod_title, SORT_NUMERIC );
-		}
-		elseif( preg_match( '/^page\-([0-9]+)$/', ( isset( $array_op[0] ) ? $array_op[0] : '' ), $m ) )
-		{
-			$page = ( int )$m[1];
 		}
 	}
 }

@@ -20,10 +20,6 @@ $array_config = array();
 
 if( $nv_Request->isset_request( 'submit', 'post' ) )
 {
-	$array_config['indexfile'] = $nv_Request->get_title( 'indexfile', 'post', 'none' );
-	$array_config['viewlist_type'] = $nv_Request->get_title( 'viewlist_type', 'post', 'list' );
-	$array_config['per_page_home'] = $nv_Request->get_int( 'per_page_home', 'post', 20 );
-	$array_config['per_page_child'] = $nv_Request->get_int( 'per_page_child', 'post', 20 );
 	$array_config['is_addfile'] = $nv_Request->get_int( 'is_addfile', 'post', 0 );
 	$array_config['is_upload'] = $nv_Request->get_int( 'is_upload', 'post', 0 );
 	$array_config['maxfilesize'] = $nv_Request->get_float( 'maxfilesize', 'post', 0 );
@@ -36,7 +32,7 @@ if( $nv_Request->isset_request( 'submit', 'post' ) )
 	$array_config['is_resume'] = $nv_Request->get_int( 'is_resume', 'post', 0 );
 	$array_config['max_speed'] = $nv_Request->get_int( 'max_speed', 'post', 0 );
 
-	$_groups_post = $nv_Request->get_array( 'groups_addfile', 'post', array() );
+	$_groups_post = $nv_Request->get_array( 'groups_upload', 'post', array() );
 	$array_config['groups_addfile'] = ! empty( $_groups_post ) ? implode( ',', nv_groups_post( array_intersect( $_groups_post, array_keys( $groups_list ) ) ) ) : '';
 
 	$_groups_post = $nv_Request->get_array( 'groups_upload', 'post', array() );
@@ -218,35 +214,6 @@ foreach( $array_config['groups_upload'] as $group )
 	$xtpl->assign( 'GROUPS_UPLOAD', $group );
 	$xtpl->parse( 'main.groups_upload' );
 }
-
-if( $array_config['indexfile'] != 'viewcat_list_new' )
-{
-	$xtpl->parse( 'main.display_viewlist_type' );
-}
-$array_indexfile = array(
-	'viewcat_main_bottom' => $lang_module['config_indexfile_main_bottom'],
-	'viewcat_list_new' => $lang_module['config_indexfile_list_new'],
-	'none' => $lang_module['config_indexfile_none']
-);
-foreach( $array_indexfile as $key => $value )
-{
-	$sl = $array_config['indexfile'] == $key ? 'selected="selected"' : '';
-	$xtpl->assign( 'INDEXFILE', array( 'key' => $key, 'value' => $value, 'selected' => $sl ) );
-	$xtpl->parse( 'main.indexfile' );
-}
-
-$array_viewlist_type = array(
-	'list' => $lang_module['config_viewlist_list'],
-	'table' => $lang_module['config_viewlist_table']
-);
-foreach( $array_viewlist_type as $key => $value )
-{
-	$ck = $array_config['viewlist_type'] == $key ? 'checked="checked"' : '';
-	$xtpl->assign( 'VIEWLIST', array( 'key' => $key, 'value' => $value, 'checked' => $ck ) );
-	$xtpl->parse( 'main.viewlist_type' );
-}
-
-$xtpl->assign( 'IS_ADDFILE', !$array_config['is_addfile'] ? 'style="display: none"' : '' );
 
 $xtpl->parse( 'main' );
 $contents = $xtpl->text( 'main' );

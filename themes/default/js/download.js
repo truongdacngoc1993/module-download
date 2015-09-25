@@ -6,6 +6,41 @@
  * @Createdate 1 - 31 - 2010 5 : 12
  */
 
+// Viewfile
+$(document).ready(function() {
+    $("#pop").on("click", function() {
+       $('#imagepreview').attr('src', $('#imageresource').attr('src'));
+       $('#imagemodal').modal('show');
+    });
+
+	$('.hover-star').rating({
+		focus : function(value, link) {
+			var tip = $('#hover-test');
+			if (sr != 2) {
+				tip[0].data = tip[0].data || tip.html();
+				tip.html(file_your_rating + ': ' + link.title || 'value: ' + value);
+				sr = 1;
+			}
+		},
+		blur : function(value, link) {
+			var tip = $('#hover-test');
+			if (sr != 2) {
+				$('#hover-test').html(tip[0].data || '');
+				sr = 1;
+			}
+		},
+		callback : function(value, link) {
+			if (sr == 1) {
+				sr = 2;
+				$('.hover-star').rating('disable');
+				nv_sendrating(id, value);
+			}
+		}
+	});
+
+	$('.hover-star').rating('select', rating_point);
+});
+
 // Upload
 $('#upload_fileupload').change(function(){
      $('#file_name').val($(this).val().match(/[-_\w]+[.][\w]+$/i)[0]);
@@ -55,9 +90,9 @@ function nv_linkdirect(code) {
 
 //  ---------------------------------------
 
-function nv_link_report($_this, fid) {
+function nv_link_report(fid) {
 	$.post(nv_base_siteurl + 'index.php?' + nv_lang_variable + '=' + nv_lang_data + '&' + nv_name_variable + '=' + nv_module_name + '&' + nv_fc_variable + '=report&nocache=' + new Date().getTime(), 'id=' + fid, function(res) {
-		alert($_this.data('thanks'));
+		alert(report_thanks_mess);
 	});
 	return false;
 }

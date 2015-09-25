@@ -7,7 +7,6 @@
  * @License GNU/GPL version 2 or any later version
  * @Createdate 2-9-2010 14:43
  */
-
 if( ! defined( 'NV_IS_FILE_ADMIN' ) ) die( 'Stop!!!' );
 
 //Edit - accept file
@@ -25,7 +24,6 @@ if( $nv_Request->isset_request( 'edit', 'get' ) )
 	}
 
 	$groups_list = nv_groups_list();
-	nv_status_notification( NV_LANG_DATA, $module_name, 'upload_new', $id );
 
 	$sql = "SELECT config_value FROM " . NV_PREFIXLANG . "_" . $module_data . "_config WHERE config_name='upload_dir'";
 	$result = $db->query( $sql );
@@ -623,8 +621,8 @@ if( $nv_Request->isset_request( 'del', 'post' ) )
 
 	$id = $nv_Request->get_int( 'id', 'post', 0 );
 
-	$query = $db->query( 'SELECT id, fileupload, fileimage FROM ' . NV_PREFIXLANG . '_' . $module_data . '_tmp WHERE id=' . $id );
-	list( $id, $fileupload, $fileimage ) = $query->fetch( 3 );
+	$query = 'SELECT id, fileupload, fileimage FROM ' . NV_PREFIXLANG . '_' . $module_data . '_tmp WHERE id=' . $id;
+	list( $id, $fileupload, $fileimage ) = $db->query->fetch( 3 );
 	if( empty( $id ) )
 	{
 		die( 'NO' );
@@ -653,10 +651,7 @@ if( $nv_Request->isset_request( 'del', 'post' ) )
 	}
 
 	$sql = 'DELETE FROM ' . NV_PREFIXLANG . '_' . $module_data . '_tmp WHERE id=' . $id;
-	if( $db->query( $sql ) )
-	{
-		nv_status_notification( NV_LANG_DATA, $module_name, 'upload_new', $id );
-	}
+	$db->query( $sql );
 
 	die( 'OK' );
 }
@@ -693,14 +688,7 @@ if( $nv_Request->isset_request( 'alldel', 'post' ) )
 		}
 	}
 
-	$result = $db->query( 'SELECT id FROM ' . NV_PREFIXLANG . '_' . $module_data . '_tmp' );
-	while( list( $_id ) = $result->fetch( 3 ) )
-	{
-		nv_status_notification( NV_LANG_DATA, $module_name, 'upload_new', $_id );
-	}
-
 	$db->query( 'TRUNCATE TABLE ' . NV_PREFIXLANG . '_' . $module_data . '_tmp' );
-
 	die( 'OK' );
 }
 

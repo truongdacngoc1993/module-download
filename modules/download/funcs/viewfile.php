@@ -133,7 +133,6 @@ $row['catname'] = $list_cats[$row['catid']]['name'];
 
 //phan quyen tai file tai danh muc
 $row['is_download_allow'] = $list_cats[$row['catid']]['is_download_allow'];
-
 //neu danh muc cho phep tai file thi kiem tra tiep phan quyen tai file trong chi tiet file
 if( $row['is_download_allow'] )
 {
@@ -258,24 +257,38 @@ if( ! in_array( $row['id'], $dfile ) )
 	++$row['view_hits'];
 }
 
+$array_keyword = array();
+
+	$_query = $db->query( 'SELECT a1.keyword, a2.alias FROM ' . NV_PREFIXLANG . '_' . $module_data . '_tags_id a1 INNER JOIN ' . NV_PREFIXLANG . '_' . $module_data . '_tags a2 ON a1.did=a2.did WHERE a1.id=' . $row['id'] );
+	while( $_row = $_query->fetch() )
+	{
+		$array_keyword[] = $_row;
+		$meta_property['article:tag'][] = $_row['keyword'];
+	}
+
 // comment
-$content_comment = '';
 if( isset( $site_mods['comment'] ) and isset( $module_config[$module_name]['activecomm'] ) )
 {
 	define( 'NV_COMM_ID', $row['id'] );
-    define( 'NV_COMM_AREA', $module_info['funcs'][$op]['func_id'] );
+	define( 'NV_COMM_ALLOWED', nv_user_in_groups( $row['groups_comment'] ) );
+	// Kiem tra quyen dang binh luan
+	$allowed = $module_config[$module_name]['allowed_comm'];
 
-    $allowed = $module_config[$module_name]['allowed_comm'];
-    if( $allowed == '-1' )
-    {
-       $allowed = $row['groups_comment'];
-    }
-    define( 'NV_PER_PAGE_COMMENT', 5 ); //Số bản ghi hiển thị bình luận
-    require_once NV_ROOTDIR . '/modules/comment/comment.php';
-    $area = ( defined( 'NV_COMM_AREA' ) ) ? NV_COMM_AREA : 0;
-    $checkss = md5( $module_name . '-' . $area . '-' . NV_COMM_ID . '-' . $allowed . '-' . NV_CACHE_PREFIX );
+	if( $allowed == '-1' )
+	{
+		// Quyen han dang binh luan theo bai viet
+		$allowed = ( defined( 'NV_COMM_ALLOWED' ) ) ? NV_COMM_ALLOWED : $module_config[$module_name]['setcomm'];
+	}
+	define( 'NV_PER_PAGE_COMMENT', 5 );//per_page_comment
+	require_once NV_ROOTDIR . '/modules/comment/comment.php';
+	$area = ( defined( 'NV_COMM_AREA' ) ) ? NV_COMM_AREA : 0;
+	$checkss = md5( $module_name . '-' . $area . '-' . NV_COMM_ID . '-' . $allowed . '-' . NV_CACHE_PREFIX );
 
     $content_comment = nv_comment_module( $module_name, $checkss, $area, NV_COMM_ID, $allowed, 1 );
+}
+else
+{
+	$content_comment = '';
 }
 
 $row['rating_point'] = 0;
@@ -304,7 +317,7 @@ $page_title = $row['title'];
 $key_words = $module_info['keywords'];
 $description = $row['description'];
 
-$contents = view_file( $row, $download_config, $content_comment );
+$contents = view_file( $row, $download_config,$array_keyword, $content_comment );
 
 include NV_ROOTDIR . '/includes/header.php';
 echo nv_site_theme( $contents );

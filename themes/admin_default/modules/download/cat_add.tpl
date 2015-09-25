@@ -7,12 +7,12 @@
 		<table class="table table-striped table-bordered table-hover">
 			<tbody>
 				<tr>
-					<td> {LANG.category_cat_name} </td>
-					<td><input class="w300 form-control" type="text" value="{DATA.title}" name="title" id="title" maxlength="100" /></td>
+					<td> {LANG.category_cat_name} <sup class="required">(*)</sup></td>
+					<td><input class="w300 form-control" type="text" value="{DATA.title}" name="title" id="idtitle" maxlength="100" {ONCHANGE} /></td>
 				</tr>
 				<tr>
 					<td> {LANG.alias} </td>
-					<td><input class="w300 form-control" type="text" value="{DATA.alias}" name="alias" id="alias" maxlength="100" /></td>
+					<td><input class="w300 form-control pull-left" type="text" value="{DATA.alias}" name="alias" id="idalias" maxlength="100" />&nbsp;<em class="fa fa-refresh fa-lg fa-pointer" onclick="get_alias();">&nbsp;</em></td>
 				</tr>
 				<tr>
 					<td> {LANG.description} </td>
@@ -52,4 +52,28 @@
 		</table>
 	</div>
 </form>
+<script>
+	function get_alias() {
+	var title = strip_tags(document.getElementById('idtitle').value);
+	if (title != '') {
+		$.post(script_name + '?' + nv_name_variable + '=' + nv_module_name + '&' + nv_fc_variable + '=cat&nocache=' + new Date().getTime(), 'gettitle=' + encodeURIComponent(title) , function(res) {
+			if (res != "") {
+				document.getElementById('idalias').value = res;
+			} else {
+				document.getElementById('idalias').value = '';
+			}
+		});
+	}
+	return false;
+}
+</script>
 <!-- END: main -->
+<!-- BEGIN: get_alias -->
+<script type="text/javascript">
+$(document).ready(function() {
+	$("#idtitle").change(function() {
+		get_alias();
+	});
+	});
+</script>
+<!-- END: get_alias -->
